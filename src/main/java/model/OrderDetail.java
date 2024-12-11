@@ -1,6 +1,6 @@
 package model;
 
-public class OrderDetail {
+public class OrderDetail implements Comparable<OrderDetail> {
 	private Order order;
 	private ProductModel model;
 	private int price;
@@ -14,6 +14,9 @@ public class OrderDetail {
 		this.price = price;
 		this.discount = discount;
 		this.quantity = quantity;
+	}
+
+	public OrderDetail() {
 	}
 
 	public Order getOrder() {
@@ -54,6 +57,11 @@ public class OrderDetail {
 
 	public void setQuantity(int quantity) {
 		this.quantity = quantity;
+	}
+
+	@Override
+	public int compareTo(OrderDetail od) {
+		return model.getProduct().getId() - od.getModel().getProduct().getId();
 	}
 
 }

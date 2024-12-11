@@ -54,6 +54,7 @@ public class Checkout extends HttpServlet {
 				modelID = Integer.valueOf(arrModels[i]);
 				quantity = Integer.valueOf(arrQuantities[i]);
 				ProductModel model = dao.getModelByID(modelID);
+			
 				checkout.put(model, quantity);
 			}
 		}

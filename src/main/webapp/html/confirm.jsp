@@ -67,6 +67,24 @@ if (note != null && !note.isBlank()) {
 									placeholder="*Đoạn mã gồm 6 sô" minlength="6" maxlength="6"
 									required>
 							</div>
+							<div class="access_group">
+								<div style="display: flex; flex-direction: column; align-items: center;">
+									<span>Private key</span>
+									<textarea style="height: 30vh; width: 55%" readonly id="privatekey" type="text" name="privateKey"
+										required><%=request.getAttribute("privateKey")%></textarea>
+								</div>
+								<div style="display: flex; flex-direction: column; align-items: center;">
+									<span>Public key</span>
+									<textarea style="height: 30vh; width: 55%" readonly id="publicKey" type="text" name="publicKey"
+									required><%=request.getAttribute("publicKey")%></textarea>
+								</div>
+									
+								<i id="again" onclick="reAgainKey()" class="fa fa-repeat"
+									aria-hidden="true" style="cursor: pointer"></i> 
+									
+								<i id="downloadKey" onclick="downloadKey()"
+									class="fa-solid fa-download" style="cursor: pointer"></i>
+							</div>
 							<button type="submit" class="btn access_btn access_btn_submit">Tiếp
 								tục</button>
 						</div>
@@ -94,6 +112,45 @@ if (note != null && !note.isBlank()) {
 	</div>
 
 	<script src="../js/access.js"></script>
+	<script
+		src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+	<script type="text/javascript">
+		function reAgainKey() {
+			var inputData = $("#privatekey").val();
+			$.ajax({
+				url : "againKey",
+				type : "POST",
+				data : {
+					privateKey : inputData
+				},
+				success : function(response) {
+					$("#privatekey").val(response.privateKey); 
+			        $("#publicKey").val(response.publicKey); 
+				},
+				error : function() {
+					console.log("error")
+				}
+			});
+		}
+
+		function downloadKey() {
+			var inputData = $("#privatekey").val();
+			$.ajax({
+				url : "downloadKey",
+				type : "POST",
+				data : {
+					privateKey : inputData
+				},
+				success : function(response) {
+					console.log("ok")
+					console.log(response)
+				},
+				error : function() {
+					console.log("error")
+				}
+			});
+		}
+	</script>
 </body>
 
 </html>

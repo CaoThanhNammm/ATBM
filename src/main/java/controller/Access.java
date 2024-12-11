@@ -1,14 +1,17 @@
 package controller;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -19,6 +22,7 @@ import database.TableUsers;
 import model.Account;
 import model.AccountRole;
 import model.AccountStatus;
+import model.Constant;
 import model.Encrypt;
 import model.Gender;
 import model.VerifyEmail;
@@ -119,8 +123,10 @@ public class Access extends HttpServlet {
 					} else {
 						String code = MailService.sendEmail(email, subject[0], mess[0], null);
 						String id = AccountDAO.generateID(email, phone);
+
 						Account ac = new Account(id, email, phone, pass, name, Gender.getGender(gender[0]),
 								LocalDate.parse(dob), AccountRole.getRole(1), address, AccountStatus.getStatus(2));
+
 						verify = new VerifyEmail(Encrypt.encrypt(code), ac, exist);
 
 						if (code != null && !code.isBlank()) {
@@ -143,8 +149,11 @@ public class Access extends HttpServlet {
 			if (verify == null) {
 				request.getRequestDispatcher("login.jsp?status=failed").forward(request, response);
 			} else {
+
 				String input = Encrypt.encrypt((String) request.getParameter("verificationCode"));
 				String status = (String) request.getSession().getAttribute("statusConfirm");
+				String publicKeyBase64 = request.getParameter("publicKey");
+
 				if (verify.isCode(input)) {
 					if (status == null) {
 						verify = null;
@@ -164,6 +173,7 @@ public class Access extends HttpServlet {
 						}
 					} else if (status.equals("register")) {
 						// Đăng ký
+						verify.getAc().setPublicKey(publicKeyBase64);
 						int count = AccountDAO.insertAccount(verify.getAc());
 						if (count > 0) {
 							if (countUser == 0) {
@@ -198,6 +208,7 @@ public class Access extends HttpServlet {
 				request.getRequestDispatcher("forget.jsp?status=failed").forward(request, response);
 			}
 			break;
+
 		case "admin": {
 			Account admin = (Account) request.getSession().getAttribute("account");
 			Account moreInfo = (Account) request.getSession().getAttribute("moreInfo");
