@@ -119,7 +119,8 @@ public class OrderDAO {
 			String publicKey = order.getPublicKey();
 
 			StringBuilder sql = new StringBuilder();
-			sql.append("INSERT INTO orders(userID, dateCreated, lastUpdated, phone, address, statusID, hash, sign, publicKey) ");
+			sql.append(
+					"INSERT INTO orders(userID, dateCreated, lastUpdated, phone, address, statusID, hash, sign, publicKey) ");
 			sql.append("VALUES(?,?,?,?,?,?,?,?,?)");
 			PreparedStatement statement = connection.getConnection().prepareStatement(sql.toString());
 			statement.setString(1, userID);

@@ -104,7 +104,7 @@
 								Đơn hàng đúng
 								<i class="fa-solid fa-circle-check" style="color: #63E6BE;"></i>
 								<%}else {%>
-								Đơn hàng bị chỉnh sửa
+								Đơn hàng bị chỉnh sửa. Vui lòng không thanh toán đơn này
 								<i class="fa-solid fa-circle-exclamation" style="color: #fc0303;"></i>
 								<%} %>
 							</h6>

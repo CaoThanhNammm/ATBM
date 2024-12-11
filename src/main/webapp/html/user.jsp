@@ -29,10 +29,10 @@ String status = request.getParameter("status");
 String field = request.getParameter("field");
 Object ordersObject = request.getSession().getAttribute("orders");
 List<Order> orders = null;
-if(ordersObject != null){
+if (ordersObject != null) {
 	orders = (List<Order>) ordersObject;
 }
-if(field == null) 
+if (field == null)
 	field = "";
 String note = "";
 if (status != null) {
@@ -76,6 +76,8 @@ if (status != null) {
 			<div class="tab">
 				<button class="tablinks active" onclick="_switchTab(event, 'form')">Thông
 					tin người dùng</button>
+				<button class="tablinks" onclick="_switchTab(event, 'createNewKey')">Tạo
+					khóa mới</button>
 				<button class="tablinks" onclick="_switchTab(event, 'password')">Đổi
 					mật khẩu</button>
 				<button class="tablinks" onclick="_switchTab(event, 'order')">Lịch
@@ -167,38 +169,74 @@ if (status != null) {
 						</tr>
 					</thead>
 					<tbody>
-						<%for(Order order : orders){ %>
+						<%
+						for (Order order : orders) {
+						%>
 						<tr>
-							<td><%=order.getId() %></td>
-							<td><%=order.getDateCreated().toString() %></td>
-							<td><%=order.getLastUpdated().toString() %></td>
-							<td><%=new Product().formatNumber(order.getTotalPrice()) %>đ</td>
-							<td><%=order.getStatus().getName() %></td>
-							<td><a target="_blank" rel="noopener noreferrer" class="details-button" href="orderDetail?orderID=<%=order.getId()%>">Chi tiết</a></td>
+							<td><%=order.getId()%></td>
+							<td><%=order.getDateCreated().toString()%></td>
+							<td><%=order.getLastUpdated().toString()%></td>
+							<td><%=new Product().formatNumber(order.getTotalPrice())%>đ</td>
+							<td><%=order.getStatus().getName()%></td>
+							<td><a target="_blank" rel="noopener noreferrer"
+								class="details-button"
+								href="orderDetail?orderID=<%=order.getId()%>">Chi tiết</a></td>
 						</tr>
-						<%} %>
+						<%
+						}
+						%>
 					</tbody>
 				</table>
 			</div>
+
+			<div id="createNewKey" class="tabcontent">
+				<form action="../html/infoUser" method="POST">
+					<span class="text-warning "><%=field.equals("createNewKey") ? note : ""%></span>
+					
+					<input type="hidden" name="info" value="createNewKey"> <label
+						for="textarea3">Mật khẩu</label> <input type="password"
+						name="confirmPassword" id="textarea3" /> <label>
+						Privatekey(đường dẫn của khóa: "C:/privatekey")</label> 
+						<input type="text" id="filename" name="filename" required>
+					<button class="btn_new_key" id="openModalBtn">Tạo mới</button>
+				</form>
+			</div>
+			<%
+			request.getSession().removeAttribute("infoAccount");
+			request.getSession().removeAttribute("orders");
+			%>
+			<%
+			}
+			%>
 		</div>
-		<%
-		request.getSession().removeAttribute("infoAccount");
-		request.getSession().removeAttribute("orders");
-		%>
-		<%
-		}
-		%>
-	</div>
-	<%@include file="footer.jsp"%>
-
-	<script src="../js/index.js"></script>
-	<script src="../js/tab.js"></script>
-	<script src="https://code.jquery.com/jquery-3.7.1.js"
-		integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
-		crossorigin="anonymous">
-		
-	</script>
-
+		<%@include file="footer.jsp"%>
 </body>
 
+
+<script src="../js/index.js"></script>
+<script src="../js/tab.js"></script>
+<script src="https://code.jquery.com/jquery-3.7.1.js"
+	integrity="sha256-eKhayi8LEQwp4NKxN+CfCh+3qOVUtJn3QNZ0TciWLP4="
+	crossorigin="anonymous">
+	
+</script>
+<script>
+	const openModalBtn = document.getElementById("openModalBtn");
+	const modal = document.getElementById("modal");
+	const closeBtn = document.getElementsByClassName("closeBtn")[0];
+
+	openModalBtn.onclick = function() {
+		modal.style.display = "flex";
+	}
+
+	closeBtn.onclick = function() {
+		modal.style.display = "none";
+	}
+
+	window.onclick = function(event) {
+		if (event.target == modal) {
+			modal.style.display = "none";
+		}
+	}
+</script>
 </html>
