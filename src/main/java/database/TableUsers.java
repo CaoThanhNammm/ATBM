@@ -16,4 +16,5 @@ public interface TableUsers {
 	String ADDRESS = "address";
 	String STATUS = "statusID";
 	String PASSWORD = "encryptedPassword";
+	String PUBLIC_KEY = "publicKey";
 }

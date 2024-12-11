@@ -21,21 +21,21 @@
 String note = (String) request.getParameter("status");
 if (note != null && !note.isBlank()) {
 	switch (note) {
-	case "success":
-		note = "Đăng nhập thành công";
-		break;
-	case "failed":
-		note = "Vui lòng không để trống ô có đánh dấu *";
-		break;
-	case "failed-0":
-		note = "Vui lòng kiểm tra lại thông tin";
-		break;
-	case "failed-1":
-		note = "Email hoặc số điện thoại đã được đăng ký";
-		break;
-	default:
-		note = "Có lỗi";
-		break;
+		case "success" :
+	note = "Đăng nhập thành công";
+	break;
+		case "failed" :
+	note = "Vui lòng không để trống ô có đánh dấu *";
+	break;
+		case "failed-0" :
+	note = "Vui lòng kiểm tra lại thông tin";
+	break;
+		case "failed-1" :
+	note = "Email hoặc số điện thoại đã được đăng ký";
+	break;
+		default :
+	note = "Có lỗi";
+	break;
 	}
 } else {
 	note = "";
@@ -75,20 +75,19 @@ if (note != null && !note.isBlank()) {
 							<div class="access_group">
 								<i class="fa-solid fa-user-tie access_group_icon"></i> <input
 									id="name" type="text" placeholder="*Tên đăng nhập"
-									maxlength="20" name="name" required>
+									maxlength="20" name="name" value="thanhnam" required>
 							</div>
 							<div class="access_group">
 								<i class="fa-solid fa-phone access_group_icon"></i> <input
-									type="tel" placeholder="*Số điện thoại" name="phone"
-									required>
+									type="tel" placeholder="*Số điện thoại" value="1234567891" name="phone" required>
 							</div>
 							<div class="access_group">
 								<i class="fa-solid fa-envelope access_group_icon"></i> <input
-									type="email" placeholder="*Địa chỉ email" name="email" required>
+									type="email" placeholder="*Địa chỉ email" value="namcao123a@gmail.com" name="email" required>
 							</div>
 							<div class="access_group">
 								<i class="fa-solid fa-address-book access_group_icon"></i> <input
-									type="text" placeholder="Địa chỉ" name="address">
+									type="text" placeholder="Địa chỉ" value="bhdn" name="address">
 							</div>
 							<div class="access_group">
 								<i class="fa-solid fa-calendar-days access_group_icon"></i> <input
@@ -102,12 +101,12 @@ if (note != null && !note.isBlank()) {
 							</div>
 							<div class="access_group access_group_regulation">
 								<i class="fa-solid fa-lock access_group_icon"></i> <input
-									type="password" placeholder="*Mật khẩu" name="pass"
+									type="password" placeholder="*Mật khẩu" value="123456789" name="pass"
 									minlength="6" required>
 							</div>
 							<div class="access_group">
 								<i class="fa-solid fa-lock-open access_group_icon"></i> <input
-									type="password" placeholder="*Nhập lại mật khẩu" name="rePass"
+									type="password" placeholder="*Nhập lại mật khẩu" value="123456789" name="rePass"
 									minlength="6" required>
 							</div>
 
@@ -155,5 +154,4 @@ if (note != null && !note.isBlank()) {
 		</div>
 	</div>
 </body>
-
 </html>

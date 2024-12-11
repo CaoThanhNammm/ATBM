@@ -10,7 +10,8 @@ import static database.TableUsers.PASSWORD;
 import static database.TableUsers.PHONE;
 import static database.TableUsers.ROLE;
 import static database.TableUsers.STATUS;
-
+import static database.TableUsers.PUBLIC_KEY;
+import java.security.PublicKey;
 import java.time.LocalDate;
 
 import org.jdbi.v3.core.mapper.reflect.ColumnName;
@@ -46,12 +47,16 @@ public class Account {
 	@ColumnName(STATUS)
 	private AccountStatus status;
 
-	public Account(String id, String fullName, AccountRole role, AccountStatus status) {
+	@ColumnName(PUBLIC_KEY)
+	private String publicKey;
+
+	public Account(String id, String fullName, AccountRole role, AccountStatus status, String publicKey) {
 		super();
 		this.id = id;
 		this.fullName = fullName;
 		this.role = role;
 		this.status = status;
+		this.publicKey = publicKey;
 	}
 
 	public Account(String id, String email, String phone, String fullName, String address, Gender gender,
@@ -163,6 +168,14 @@ public class Account {
 
 	public void setGender(Gender gender) {
 		this.gender = gender;
+	}
+
+	public String getPublicKey() {
+		return publicKey;
+	}
+
+	public void setPublicKey(String publicKey) {
+		this.publicKey = publicKey;
 	}
 
 	public AccountRole getRole() {

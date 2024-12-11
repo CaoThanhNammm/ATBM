@@ -28,6 +28,12 @@ public class ProductModel {
 		this.status = status;
 	}
 
+	@Override
+	public String toString() {
+		return "ProductModel [id=" + id + ", product=" + product + ", optionValue=" + optionValue + ", status=" + status
+				+ "]";
+	}
+
 	public int getId() {
 		return id;
 	}

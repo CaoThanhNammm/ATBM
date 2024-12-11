@@ -95,6 +95,20 @@
 							<h6>Trạng thái</h6>
 							<h6><%=order.getStatus().getName() %></h6>
 						</div>
+						<div class="cart_body_bill_group">
+							<h6>Xác thực</h6>
+							<h6>
+								<% 
+								if((boolean)request.getAttribute("isConfirm")){
+								%>
+								Đơn hàng đúng
+								<i class="fa-solid fa-circle-check" style="color: #63E6BE;"></i>
+								<%}else {%>
+								Đơn hàng bị chỉnh sửa. Vui lòng không thanh toán đơn này
+								<i class="fa-solid fa-circle-exclamation" style="color: #fc0303;"></i>
+								<%} %>
+							</h6>
+						</div>
 						<%if(order.getStatus().getId() == 1){ %>
 						<form action="orderDetail" method="POST">
 							<input type="hidden" name="cancel" value="true">

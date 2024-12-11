@@ -11,7 +11,7 @@ import static database.TableUsers.PASSWORD;
 import static database.TableUsers.PHONE;
 import static database.TableUsers.ROLE;
 import static database.TableUsers.STATUS;
-
+import static database.TableUsers.PUBLIC_KEY;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -80,11 +80,11 @@ public class AccountDAO {
 		String prefix = name.substring(0, name.indexOf("-") + 1);
 		String name2 = name.replace(prefix, "");
 		prefix = prefix.replace("-", "").toLowerCase();
-		ac = h.createQuery("SELECT " + ID + ", " + FULL_NAME + ", " + ROLE + ", " + STATUS + " FROM " + NAME_TABLE
+		ac = h.createQuery("SELECT " + ID + ", " + FULL_NAME + ", " + ROLE + ", " + STATUS + ", " + PUBLIC_KEY + " FROM " + NAME_TABLE
 				+ " WHERE " + prefix + "=:name" + " AND " + PASSWORD + "=:password").bind("name", name2)
 				.bind("password", Encrypt.encrypt(password))
 				.map((rs, ctx) -> new Account(rs.getString(ID), rs.getString(FULL_NAME),
-						AccountRole.getRole(rs.getInt(ROLE)), AccountStatus.getStatus(rs.getInt(STATUS))))
+						AccountRole.getRole(rs.getInt(ROLE)), AccountStatus.getStatus(rs.getInt(STATUS)), rs.getString(PUBLIC_KEY)))
 				.findOne().orElse(null);
 		JDBIConnectionPool.get().releaseConnection(h);
 		return ac;
@@ -105,9 +105,9 @@ public class AccountDAO {
 	public synchronized static int insertAccount(Account ac) {
 		// TODO Auto-generated method stub
 		Handle h = JDBIConnectionPool.get().getConnection();
-		int count = h.execute("INSERT INTO " + NAME_TABLE + " VALUES (?,?,?,?,?,?,?,?,?,?)", ac.getId(), ac.getEmail(),
+		int count = h.execute("INSERT INTO " + NAME_TABLE + " VALUES (?,?,?,?,?,?,?,?,?,?,?)", ac.getId(), ac.getEmail(),
 				ac.getPhone(), Encrypt.encrypt(ac.getPass()), ac.getFullName(), ac.getGender().getId(), ac.getDob(),
-				ac.getRole().getId(), ac.getAddress(), ac.getStatus().getId());
+				ac.getRole().getId(), ac.getAddress(), ac.getStatus().getId(), ac.getPublicKey());
 		JDBIConnectionPool.get().releaseConnection(h);
 		return count;
 	}

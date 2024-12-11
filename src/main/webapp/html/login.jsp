@@ -71,12 +71,12 @@ Note: Nơi đăng nhập của những khách hàng đã có tài khoản
 
 						<div class="mt-4">
 							<div class="access_group">
-								<i class="fa-solid fa-user-tie access_group_icon"></i> <input
+								<i class="fa-solid fa-user-tie access_group_icon"></i> <input value="namcao123a@gmail.com"
 									type="text" placeholder="Email hoặc Số điện thoại" name="name"
 									required>
 							</div>
 							<div class="access_group">
-								<i class="fa-solid fa-lock access_group_icon"></i> <input
+								<i class="fa-solid fa-lock access_group_icon"></i> <input value="123456789"
 									type="password" placeholder="Mật khẩu" name="password" required>
 							</div>
 
