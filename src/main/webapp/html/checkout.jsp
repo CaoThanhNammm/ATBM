@@ -31,7 +31,7 @@ Account acInfo = (Account) request.getAttribute("acInfo");
 		if (ac != null) {
 		%>
 		<div class="checkout">
-			<form class="checkout-form" action="complete-checkout" method="POST">
+			<form class="checkout-form" action="complete-checkout" method="POST" enctype="multipart/form-data">
 				<h2>Thông tin khách hàng</h2>
 				<label>Tên khách hàng:</label> <input type="text" name="username"
 					placeholder="Nhập tên" value="<%=ac.getFullName()%>" required>
@@ -41,7 +41,9 @@ Account acInfo = (Account) request.getAttribute("acInfo");
 					placeholder="Số điện thoại..." value="<%=acInfo.getPhone()%>"
 					required> <label for="shipping">Địa chỉ:</label> <input
 					type="text" name="address" placeholder="Địa chỉ..."
-					value="<%=acInfo.getAddress()%>" required>
+					value="<%=acInfo.getAddress()%>" required> <label>
+					Privatekey</label> <input type="file" id="file" name="file" required>
+
 				<div style="display: flex; justify-content: space-between;">
 					<a href="cart" class="button">Trở về giỏ hàng</a>
 					<button>Đặt hàng</button>
@@ -62,7 +64,8 @@ Account acInfo = (Account) request.getAttribute("acInfo");
 				Integer amount = entry.getValue();
 				%>
 				<div class="summary-item">
-					<span><%=model.getProduct().getName() + " | Lựa chọn: " + model.getOptionValue() + " x" + amount%></span> <span><strong><%=new Product().formatNumber((model.getProduct().getPrice() - model.getProduct().getDiscount()) * amount)%>đ</strong></span>
+					<span><%=model.getProduct().getName() + " | Lựa chọn: " + model.getOptionValue() + " x" + amount%></span>
+					<span><strong><%=new Product().formatNumber((model.getProduct().getPrice() - model.getProduct().getDiscount()) * amount)%>đ</strong></span>
 					<%
 					total += (model.getProduct().getPrice() - model.getProduct().getDiscount()) * amount;
 					%>
