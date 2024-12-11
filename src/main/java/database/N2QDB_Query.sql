@@ -18,7 +18,7 @@
 CREATE DATABASE IF NOT EXISTS `n2q` /*!40100 DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci */;
 USE `n2q`;
 
--- Dumping structure for table n2q.attributes
+-- Dumping structure for table n2q.attributesCREATE 
 CREATE TABLE IF NOT EXISTS `attributes` (
   `id` int(11) NOT NULL AUTO_INCREMENT,
   `name` varchar(50) NOT NULL,

@@ -18,7 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import model.Account;
 
-@WebFilter("/html/*")
+@WebFilter("/htmll/*")
 public class AdminFilter extends HttpFilter implements Filter {
 	private boolean check = false;
 	private static final long serialVersionUID = 1L;
