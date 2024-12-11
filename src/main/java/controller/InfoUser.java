@@ -1,14 +1,34 @@
 package controller;
 
+import static database.TableUsers.ADDRESS;
+import static database.TableUsers.DOB;
+import static database.TableUsers.EMAIL;
+import static database.TableUsers.FULL_NAME;
+import static database.TableUsers.GENDER;
+import static database.TableUsers.ID;
+import static database.TableUsers.PASSWORD;
+import static database.TableUsers.PHONE;
+import static database.TableUsers.PUBLIC_KEY;
+
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Paths;
+import java.security.KeyPair;
+import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.time.LocalDate;
+import java.util.Base64;
 import java.util.List;
 
 import javax.servlet.ServletException;
+import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.Part;
 
 import org.jdbi.v3.core.Handle;
 
@@ -20,11 +40,11 @@ import model.Encrypt;
 import model.Gender;
 import model.Order;
 
-import static database.TableUsers.*;
-
+@MultipartConfig
 @WebServlet("/html/infoUser")
 public class InfoUser extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private DigitalSign dsa;
 
 	public InfoUser() {
 		super();
@@ -90,13 +110,45 @@ public class InfoUser extends HttpServlet {
 						if (AccountDAO.updateAccount(ID, ac.getId(), PASSWORD, Encrypt.encrypt(newPass))) {
 							req.getRequestDispatcher("user.jsp?status=success&field=pass").forward(req, resp);
 						} else {
-							req.getRequestDispatcher("user.jsp?status=failed-2&field=pass");
+							req.getRequestDispatcher("user.jsp?status=failed-2&field=pass").forward(req, resp);
+							;
 						}
 					} else {
-						req.getRequestDispatcher("user.jsp?status=failed-1&field=pass");
+						req.getRequestDispatcher("user.jsp?status=failed-1&field=pass").forward(req, resp);
+						;
 					}
 				} else {
-					req.getRequestDispatcher("user.jsp?status=failed-0&field=pass");
+					req.getRequestDispatcher("user.jsp?status=failed-0&field=pass").forward(req, resp);
+					;
+				}
+				break;
+			case "createNewKey":
+				dsa = new DigitalSign();
+
+				String confirmPassword = req.getParameter("confirmPassword");
+				Account hasAc = AccountDAO.getAccount("email-" + acInfo.getEmail(), confirmPassword);
+
+				if (hasAc == null) {
+					System.out.println("sai mat khau");
+					req.getRequestDispatcher("user.jsp?status=failed-1&field=createNewKey").forward(req, resp);
+				} else {
+					try {
+						KeyPair keyPair = dsa.generateKeyPair();
+
+						PublicKey pubKey = keyPair.getPublic();
+						PrivateKey priKey = keyPair.getPrivate();
+
+						// lưu publickey xuống table users
+						String userId = ac.getId();
+						AccountDAO.updateAccount(ID, userId, PUBLIC_KEY,
+								Base64.getEncoder().encodeToString(pubKey.getEncoded()));
+						// cho phép người dùng chọn thư mục lưu privateKey
+						writePrivateKey(Base64.getEncoder().encodeToString(priKey.getEncoded()), req);
+						req.getRequestDispatcher("user.jsp?status=success&field=createNewKey").forward(req, resp);
+					} catch (NoSuchAlgorithmException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 				}
 				break;
 			default:
@@ -118,4 +170,21 @@ public class InfoUser extends HttpServlet {
 		return true;
 	}
 
+	private void writePrivateKey(String privateKeyBase64, HttpServletRequest req) {
+
+		// Lấy phần file từ yêu cầu
+		String fileName = req.getParameter("filename");
+		String folderName = "C:/privatekey";
+
+		File file = new File(folderName);
+		file.mkdir();
+
+		try (FileWriter writer = new FileWriter(folderName + "/" + fileName)) {
+			writer.write(privateKeyBase64);
+			writer.flush();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+	}
 }
