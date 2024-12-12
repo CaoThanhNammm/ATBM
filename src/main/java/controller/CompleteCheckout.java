@@ -46,7 +46,7 @@ import model.ProductModel;
 import model.Status;
 
 @MultipartConfig
-@WebServlet("/html/complete-checkout")
+@WebServlet("/html/complete_checkout")
 public class CompleteCheckout extends HttpServlet {
 	private Hash sha256;
 	private DigitalSign dsa;

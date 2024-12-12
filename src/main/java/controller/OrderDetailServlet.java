@@ -50,7 +50,7 @@ public class OrderDetailServlet extends HttpServlet {
 				p.setImgs(productImagePath.list()[0]);
 			}
 		}
-		PublicKey pubKey = dsa.readPublicKey(account.getPublicKey());
+		PublicKey pubKey = dsa.readPublicKey(order.getPublicKey());
 		request.setAttribute("isConfirm", isConfirmOrder(order, pubKey));
 		request.setAttribute("order1", order);
 		request.getRequestDispatcher("orderDetail.jsp").forward(request, response);

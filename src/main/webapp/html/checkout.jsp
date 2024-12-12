@@ -31,7 +31,7 @@ Account acInfo = (Account) request.getAttribute("acInfo");
 		if (ac != null) {
 		%>
 		<div class="checkout">
-			<form class="checkout-form" action="complete-checkout" method="POST" enctype="multipart/form-data">
+			<form class="checkout-form" action="complete_checkout" method="POST" enctype="multipart/form-data">
 				<h2>Thông tin khách hàng</h2>
 				<label>Tên khách hàng:</label> <input type="text" name="username"
 					placeholder="Nhập tên" value="<%=ac.getFullName()%>" required>
