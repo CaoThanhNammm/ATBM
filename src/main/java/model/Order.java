@@ -19,7 +19,10 @@ public class Order {
 	private String hash;
 	private String sign;
 	private List<OrderDetail> details;
-	private String publicKey;
+  private String hash;   // Trường mới
+  private String sign; // Trường mới
+  private String publicKey;  // Cột mới
+
 
 	/**
 	 * 
@@ -27,6 +30,21 @@ public class Order {
 	public Order() {
 		super();
 	}
+	// Constructor với các tham số (bao gồm hash và sign)
+    public Order(int id, Account account, LocalDate dateCreated, LocalDate lastUpdated, String phone, String address, Status status,
+    		List<OrderDetail> details, String hash, String sign,String publicKey) {
+        this.id = id;
+        this.account = account;
+        this.dateCreated = dateCreated;
+        this.lastUpdated = lastUpdated;
+        this.phone = phone;
+        this.address = address;
+        this.status = status;
+        this.details = details;
+        this.hash = hash;
+        this.sign = sign;
+        this.publicKey = publicKey; 
+    }
 
 	public Order(int id, Account account, LocalDate dateCreated, LocalDate lastUpdated, String phone, String address,
 			Status status, List<OrderDetail> details) {
@@ -171,5 +189,28 @@ public class Order {
 	public void setTotalPrice(int totalPrice) {
 		this.totalPrice = totalPrice;
 	}
+	//
+	public String getHash() {
+        return hash;
+    }
+
+    public void setHash(String hash) {
+        this.hash = hash;
+    }
+
+    public String getSign() {
+        return sign;
+    }
+
+    public void setSign(String sign) {
+        this.sign = sign;
+    }
+    public String getPublicKey() {
+        return publicKey;
+    }
+
+    public void setPublicKey(String publicKey) {
+        this.publicKey = publicKey;
+    }
 
 }

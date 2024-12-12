@@ -108,6 +108,7 @@ List<Order> orders = (List<Order>) request.getAttribute("orders");
                     <td>
 						<form action="adminOrderDetail" method="get">
 							<input type="hidden" name="orderID" value="<%=order.getId()%>">
+							
 							<button class="details-btn">Chi tiết</button>
 						</form>
                     </td>

@@ -76,7 +76,7 @@
 					<div class="cart_body_bill col-lg-4">
 						<h2 class="mt-3 text-start">Thông tin đơn hàng</h2>
 						<div class="cart_body_bill_group">
-							<h6>Mã khách hàng: </h6>
+							<h6>Mã khách hàng newwwwwwwwwwwwwwwwwwwwwwwww: </h6>
 							<h6><%=account.getId() %></h6>
 						</div>
 						<div class="cart_body_bill_group">
@@ -126,6 +126,22 @@
 	                            <button type="submit">Thay đổi</button>
                         </div>
                         </form>
+                        
+                        <form action="VerifyOrderServlet" method="POST">
+    <input type="hidden" name="orderId" value="<%=order.getId() %>">
+    <button type="submit" class="btn btn-info">xác thực đơn hàng</button>
+</form>
+<%-- Thêm vào phần nội dung trước khi hiển thị thông tin đơn hàng --%>
+<% 
+    String verificationResult = (String) request.getAttribute("verificationResult");
+    if (verificationResult != null) { 
+%>
+    <div class="alert alert-info" role="alert">
+        <%= verificationResult %>
+    </div>
+<% 
+    }
+%>
 					</div>
 				</div>
 				<%} %>
