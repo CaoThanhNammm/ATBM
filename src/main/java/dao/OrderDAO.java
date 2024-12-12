@@ -270,7 +270,7 @@ public class OrderDAO {
 	            int price = rs.getInt(5);
 	            int discount = rs.getInt(6);
 	            int quantity = rs.getInt(7);
-	            Account account = new Account(rs.getString(8), null, null, null);
+	            Account account = new Account(rs.getString(8), null, null, null, null);
 	            String hash = rs.getString(10);  // Lấy giá trị của hash
 	            String sign = rs.getString(11);  // Lấy giá trị của sign
 	            String publicKey = rs.getString(12);  // Lấy giá trị của publicKey
