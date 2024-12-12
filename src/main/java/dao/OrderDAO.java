@@ -11,6 +11,7 @@ import java.util.List;
 
 import org.jdbi.v3.core.Handle;
 
+import database.JDBIConnectionPool;
 import model.Account;
 import model.Order;
 import model.OrderDetail;
@@ -239,7 +240,66 @@ public class OrderDAO {
 		}
 		return order;
 	}
+//
+	
+	
+	public Order getOrderAllByID(int orderID) {
+	    Order order = new Order(orderID, null, null, null, null, null, null, null, null, null, null); // Cập nhật constructor với hash, sign và publicKey
+	    List<OrderDetail> orderDetails = new ArrayList<OrderDetail>();
+	    
+	    try {
+	        // Cập nhật câu truy vấn SQL để lấy giá trị của hash, sign và publicKey
+	        StringBuilder sql = new StringBuilder();
+	        sql.append("SELECT o.dateCreated, o.lastUpdated, s.name AS statusName, ");
+	        sql.append("d.modelID, d.price, d.discount, d.quantity, o.userID, s.id, ");
+	        sql.append("o.hash, o.sign, o.publicKey "); // Thêm publicKey vào SELECT
+	        sql.append("FROM orders o ");
+	        sql.append("JOIN order_details d ON o.id = d.orderID ");
+	        sql.append("JOIN order_status s ON o.statusID = s.id ");
+	        sql.append("WHERE o.id = ? ");
+	        
+	        PreparedStatement statement = connection.getConnection().prepareStatement(sql.toString());
+	        statement.setInt(1, orderID);
+	        ResultSet rs = statement.executeQuery();
+	        
+	        while (rs.next()) {
+	            LocalDate dateCreated = rs.getDate(1).toLocalDate();
+	            LocalDate lastUpdated = rs.getDate(2).toLocalDate();
+	            Status status = new Status(rs.getInt(9), rs.getString(3));
+	            int modelID = rs.getInt(4);
+	            int price = rs.getInt(5);
+	            int discount = rs.getInt(6);
+	            int quantity = rs.getInt(7);
+	            Account account = new Account(rs.getString(8), null, null, null);
+	            String hash = rs.getString(10);  // Lấy giá trị của hash
+	            String sign = rs.getString(11);  // Lấy giá trị của sign
+	            String publicKey = rs.getString(12);  // Lấy giá trị của publicKey
 
+	            // Khởi tạo đối tượng Order và thiết lập các thuộc tính
+	            order.setAccount(account);
+	            order.setDateCreated(dateCreated);
+	            order.setLastUpdated(lastUpdated);
+	            order.setStatus(status);
+	            order.setHash(hash);  // Thiết lập hash cho đối tượng Order
+	            order.setSign(sign);  // Thiết lập sign cho đối tượng Order
+	            order.setPublicKey(publicKey);  // Thiết lập publicKey cho đối tượng Order
+
+	            // Truy xuất chi tiết đơn hàng và thêm vào danh sách
+	            ProductModelDAO pmDAO = new ProductModelDAO(connection);
+	            pmDAO.getModelByID(modelID);
+	            OrderDetail detail = new OrderDetail(order, pmDAO.getModelByID(modelID), price, discount, quantity);
+	            orderDetails.add(detail);
+	        }
+	        
+	        order.setDetails(orderDetails);
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    
+	    return order;
+	}
+
+	//
 	public long[] getGiveVai() {
 		// TODO Auto-generated method stub
 		List<Order> o1 = connection
@@ -285,4 +345,37 @@ public class OrderDAO {
 
 		return count;
 	}
+	public static void main(String[] args) {
+		
+		Handle connection = JDBIConnectionPool.get().getConnection(); // Thay thế bằng cách khởi tạo đúng kết nối của bạn
+        
+        // Tạo đối tượng OrderDAO và gọi getOrderByID để lấy đơn hàng theo ID
+        OrderDAO orderDAO = new OrderDAO(connection);
+        int orderID = 33;  // Thay đổi ID đơn hàng mà bạn muốn kiểm tra
+        Order order = orderDAO.getOrderAllByID(orderID);
+        JDBIConnectionPool.get().releaseConnection(connection);
+        // In ra tất cả các thuộc tính của đối tượng Order
+        if (order != null) {
+            System.out.println("Order ID: " + order.getId());
+            System.out.println("this is order public key " +order.getPublicKey());
+            System.out.println("Hash: " + order.getHash());  // In ra hash
+            System.out.println("Sign: " + order.getSign());  // In ra sign
+            
+            // In ra chi tiết đơn hàng
+            System.out.println("Order Details:");
+            for (OrderDetail detail : order.getDetails()) {
+                System.out.println("  Model ID: " + detail.getModel().getId());
+                System.out.println("  Price: " + detail.getPrice());
+                System.out.println("  Discount: " + detail.getDiscount());
+                System.out.println("  Quantity: " + detail.getQuantity());
+                System.out.println("  Total: " + (detail.getPrice() - detail.getDiscount()) * detail.getQuantity());
+            }
+        } else {
+            System.out.println("No order found with ID: " + orderID);
+        }
+    }
+		
+		
+	
+	
 }
