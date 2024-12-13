@@ -142,6 +142,10 @@ public class InfoUser extends HttpServlet {
 						String userId = ac.getId();
 						AccountDAO.updateAccount(ID, userId, PUBLIC_KEY,
 								Base64.getEncoder().encodeToString(pubKey.getEncoded()));
+
+						Account account = (Account) req.getSession().getAttribute("account");
+						account.setPublicKey(Base64.getEncoder().encodeToString(pubKey.getEncoded()));
+
 						// cho phép người dùng chọn thư mục lưu privateKey
 						writePrivateKey(Base64.getEncoder().encodeToString(priKey.getEncoded()), req);
 						req.getRequestDispatcher("user.jsp?status=success&field=createNewKey").forward(req, resp);

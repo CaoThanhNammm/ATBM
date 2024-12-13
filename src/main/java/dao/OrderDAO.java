@@ -199,7 +199,7 @@ public class OrderDAO {
 		try {
 			StringBuilder sql = new StringBuilder();
 			sql.append("SELECT o.dateCreated, o.lastUpdated, s.name AS statusName, ");
-			sql.append("d.modelID, d.price, d.discount, d.quantity, o.userID, s.id, o.hash, o.sign ");
+			sql.append("d.modelID, d.price, d.discount, d.quantity, o.userID, s.id, o.hash, o.sign, o.publicKey ");
 			sql.append("FROM orders o ");
 			sql.append("JOIN order_details d ON o.id = d.orderID ");
 			sql.append("JOIN order_status s ON o.statusID = s.id ");
@@ -218,12 +218,16 @@ public class OrderDAO {
 				Account account = new Account(rs.getString(8), null, null, null, null);
 				String hash = rs.getString(10);
 				String sign = rs.getString(11);
+				String publicKey = rs.getString(12);
+
 				order.setAccount(account);
 				order.setDateCreated(dateCreated);
 				order.setLastUpdated(lastUpdated);
 				order.setStatus(status);
 				order.setHash(hash);
 				order.setSign(sign);
+				order.setPublicKey(publicKey);
+
 				ProductModelDAO pmDAO = new ProductModelDAO(connection);
 				pmDAO.getModelByID(modelID);
 				OrderDetail detail = new OrderDetail(order, pmDAO.getModelByID(modelID), price, discount, quantity);
@@ -266,7 +270,7 @@ public class OrderDAO {
 	            int price = rs.getInt(5);
 	            int discount = rs.getInt(6);
 	            int quantity = rs.getInt(7);
-	            Account account = new Account(rs.getString(8), null, null, null);
+	            Account account = new Account(rs.getString(8), null, null, null, null);
 	            String hash = rs.getString(10);  // Lấy giá trị của hash
 	            String sign = rs.getString(11);  // Lấy giá trị của sign
 	            String publicKey = rs.getString(12);  // Lấy giá trị của publicKey
