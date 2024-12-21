@@ -76,6 +76,7 @@ public class CompleteCheckout extends HttpServlet {
 		order.setDetails(details);
 
 		String orderJson = order.createJson().toString();
+		System.out.println("đây là chuỗi json nam : "+orderJson);
 		String hashedData = hashData(orderJson);
 
 		PrivateKey priKey = readPrivateKey(req);
