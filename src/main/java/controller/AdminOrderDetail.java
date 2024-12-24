@@ -2,6 +2,11 @@ package controller;
 
 import java.io.File;
 import java.io.IOException;
+import java.security.KeyPair;
+import java.security.PrivateKey;
+import java.security.PublicKey;
+import java.util.ArrayList;
+import java.util.Base64;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -19,6 +24,9 @@ import model.Account;
 import model.Order;
 import model.OrderDetail;
 import model.Product;
+import security.DigitalSignature;
+import security.OrderJson;
+import security.ProductJson;
 
 @WebServlet("/html/adminOrderDetail")
 public class AdminOrderDetail extends HttpServlet{
@@ -26,15 +34,11 @@ public class AdminOrderDetail extends HttpServlet{
 	@Override
 	protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
 		int orderID = Integer.valueOf(req.getParameter("orderID"));
-		// Lấy thông báo xác thực từ session
-        HttpSession session = req.getSession();
-        String verificationResult = (String) session.getAttribute("verificationResult");
-
-        // Xóa thông báo khỏi session sau khi lấy để tránh thông báo bị lặp lại
-        session.removeAttribute("verificationResult");
-		
-		
-        System.out.println("trang adminorder " + verificationResult);
+        String verificationResult = null;
+        DigitalSign digitalSign = new DigitalSign();
+        Hash hashUtil = new Hash();
+      
+        
 		Handle connection = JDBIConnectionPool.get().getConnection();
 		Order order = new OrderDAO(connection).getOrderByID(orderID);
 		JDBIConnectionPool.get().releaseConnection(connection);
@@ -44,6 +48,57 @@ public class AdminOrderDetail extends HttpServlet{
 	        File productImagePath = new File(realPath);
 	        p.setImgs(productImagePath.list()[0]);
 		}
+		////////////////
+		///
+		///
+		///
+		///
+		///
+		///
+		///
+		String publicKey = null;
+		String Sign = null;
+		boolean isVerifiedAgain = false;
+        if (order != null) {
+        	try {
+        	// truy xuất dữ liệu order 
+        	publicKey = order.getPublicKey();
+        	System.out.println("publicKey : " +publicKey);
+        	
+        	//Hash = order.getHash();
+           // System.out.println("Hash: " + Hash);  // In ra hash
+            Sign = order.getSign();
+            System.out.println("Sign: " + Sign);  // In ra sign
+            String orderJson = order.createJson().toString();
+            String hashedData = hashUtil.hash(orderJson);
+         // Bước 6: Đọc lại khóa công khai từ chuỗi Base64
+            PublicKey decodedPublicKey = digitalSign.readPublicKey(publicKey);
+
+            // Bước 7: Xác minh chữ ký lại với khóa công khai đã đọc
+            isVerifiedAgain = digitalSign.verify(hashedData, Sign, decodedPublicKey);
+            System.out.println("Re-verification Result: " + (isVerifiedAgain ? "Valid" : "Invalid"));}
+        	catch (Exception e) {
+                e.printStackTrace();
+            }
+            
+        }
+           
+		
+        
+	if(isVerifiedAgain) {
+		verificationResult = "Xác thực đơn hàng thành công";
+	}else {
+		verificationResult = "Đơn hàng đã được chỉnh sửa";
+	}
+	
+		
+		
+		
+		
+		
+		///
+		///
+		///
 		req.setAttribute("verificationResult", verificationResult);
 		req.setAttribute("order", order);
 		req.setAttribute("acInfo", AccountDAO.getMoreInfo(order.getAccount()));

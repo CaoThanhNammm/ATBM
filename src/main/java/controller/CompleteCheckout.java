@@ -1,22 +1,8 @@
 package controller;
 
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.net.http.HttpRequest;
-import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.security.KeyFactory;
-import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
-import java.security.spec.InvalidKeySpecException;
-import java.security.spec.PKCS8EncodedKeySpec;
-import java.security.spec.X509EncodedKeySpec;
 import java.time.LocalDate;
 import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
 import java.util.Map;
 
@@ -27,7 +13,6 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.swing.JOptionPane;
-
 import org.jdbi.v3.core.Handle;
 
 import dao.OrderDAO;
@@ -66,6 +51,7 @@ public class CompleteCheckout extends HttpServlet {
 
 		String hashedData = req.getParameter("hashedData");
 		String digitalSign = req.getParameter("sign");
+
 		try {
 
 			boolean isSignNew = dsa.verify(hashedData, digitalSign, dsa.readPublicKey(account.getPublicKey()));
