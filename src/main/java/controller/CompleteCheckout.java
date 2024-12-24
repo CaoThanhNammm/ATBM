@@ -26,20 +26,13 @@ import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
-import javax.servlet.http.Part;
-import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 
 import org.jdbi.v3.core.Handle;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-
 import dao.OrderDAO;
 import database.JDBIConnectionPool;
 import model.Account;
-import model.Constant;
 import model.Order;
 import model.OrderDetail;
 import model.ProductModel;
@@ -48,15 +41,11 @@ import model.Status;
 @MultipartConfig
 @WebServlet("/html/complete_checkout")
 public class CompleteCheckout extends HttpServlet {
-	private Hash sha256;
-	private DigitalSign dsa;
+	private DigitalSign dsa = new DigitalSign();
 	private static final long serialVersionUID = 1L;
 
 	@Override
 	protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-		sha256 = new Hash();
-		dsa = new DigitalSign();
-
 		Account account = (Account) req.getSession().getAttribute("account");
 		String username = req.getParameter("username");
 		String phone = req.getParameter("phone");
@@ -72,62 +61,31 @@ public class CompleteCheckout extends HttpServlet {
 
 			details.add(detail);
 		}
-		
+
 		order.setDetails(details);
 
-		String orderJson = order.createJson().toString();
-		String hashedData = hashData(orderJson);
-
-		PrivateKey priKey = readPrivateKey(req);
-		String digitalSign = sign(hashedData, priKey);
-
-		if (digitalSign != null) {
-			Handle connection = JDBIConnectionPool.get().getConnection();
-			OrderDAO orderDAO = new OrderDAO(connection);
-			order.setHash(hashedData);
-			order.setSign(digitalSign);
-			order.setPublicKey(account.getPublicKey());
-			orderDAO.addOrder(order);
-			JDBIConnectionPool.get().releaseConnection(connection);
-			req.getRequestDispatcher("checkoutCompleted.jsp").forward(req, resp);
-		}
-	}
-
-	private String sign(String hashedData, PrivateKey priKey) {
+		String hashedData = req.getParameter("hashedData");
+		String digitalSign = req.getParameter("sign");
 		try {
-			String sign = dsa.sign(hashedData, priKey);
-			return sign;
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
 
-		return null;
-	}
+			boolean isSignNew = dsa.verify(hashedData, digitalSign, dsa.readPublicKey(account.getPublicKey()));
 
-	private String hashData(String data) {
-		return sha256.hash(data);
-	}
+			if (isSignNew) {
+				Handle connection = JDBIConnectionPool.get().getConnection();
+				OrderDAO orderDAO = new OrderDAO(connection);
 
-	private PrivateKey readPrivateKey(HttpServletRequest req) {
-		try {
-			Part filePart = req.getPart("file");
-			InputStream fileContent = filePart.getInputStream();
-			String privateKeyBase64 = new String(fileContent.readAllBytes(), StandardCharsets.UTF_8);
-			fileContent.close();
-			byte[] privateKeyBytes = Base64.getDecoder().decode(privateKeyBase64);
+				order.setHash(hashedData);
+				order.setSign(digitalSign);
+				order.setPublicKey(account.getPublicKey());
 
-			try {
-				PKCS8EncodedKeySpec spec = new PKCS8EncodedKeySpec(privateKeyBytes);
-				KeyFactory keyFactory = KeyFactory.getInstance("DSA");
-				PrivateKey privateKey = keyFactory.generatePrivate(spec);
-				return privateKey;
-			} catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
-				e.printStackTrace();
+				orderDAO.addOrder(order);
+				JDBIConnectionPool.get().releaseConnection(connection);
+				req.getRequestDispatcher("checkoutCompleted.jsp").forward(req, resp);
 			}
-		} catch (IOException | ServletException e) {
-			e.printStackTrace();
+		} catch (Exception e) {
+			JOptionPane.showMessageDialog(null, "Chữ ký không hợp lệ");
+			req.getRequestDispatcher("/index/index.jsp").forward(req, resp);
 		}
 
-		return null;
 	}
 }
