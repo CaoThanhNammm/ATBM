@@ -39,10 +39,17 @@ Account acInfo = (Account) request.getAttribute("acInfo");
 					placeholder="Nhập email..." value="<%=acInfo.getEmail()%>" readonly>
 				<label>Số điện thoại:</label> <input type="text" name="phone"
 					placeholder="Số điện thoại..." value="<%=acInfo.getPhone()%>"
-					required> <label for="shipping">Địa chỉ:</label> <input
-					type="text" name="address" placeholder="Địa chỉ..."
-					value="<%=acInfo.getAddress()%>" required> <label>
-					Privatekey</label> <input type="file" id="file" name="file" required>
+					required> 
+					
+					<label for="shipping">Địa chỉ:</label> 
+					<input type="text" name="address" placeholder="Địa chỉ..." value="<%=acInfo.getAddress()%>" required> 
+					
+					
+					<label>Hash(hãy dùng dữ liệu này để ký)</label> 
+					<input readonly type="text" name="hashedData" value="<%=request.getAttribute("hashedData")%>">
+					
+					<label>Chữ ký điện tử</label> 
+					<input type="text" name="sign" required>
 
 				<div style="display: flex; justify-content: space-between;">
 					<a href="cart" class="button">Trở về giỏ hàng</a>
